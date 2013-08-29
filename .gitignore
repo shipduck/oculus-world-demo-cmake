@@ -1,5 +1,46 @@
+# cmake
 CMakeCache.txt
 CMakeFiles
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+build
+
+# visual studio
+*.vcxproj
+*.vcproj
+*.filters
+*.sdf
+*.sln
+*.suo
+*.opensdf
+*.tlog
+*.lastbuildstate
+ipch
+
+# boost
+cli/boost
+
+# external library
+cli/ext/*
+
+# resource
+cli/res
+cli/src/res.h
+
+#python
+*.pyc
