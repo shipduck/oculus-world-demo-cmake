@@ -20,13 +20,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ************************************************************************************/
+#include "stdafx.h"
 
 #include "Kernel/OVR_Log.h"
 #include "Kernel/OVR_Std.h"
 
-#include "Render_D3D1X_Device.h"
+#include "Render_D3D11_Device.h"
 
 #include <d3dcompiler.h>
+
+#define OVR_D3D_VERSION 11
 
 #if (OVR_D3D_VERSION == 10)
 namespace OVR { namespace Render { namespace D3D10 {
@@ -1843,3 +1846,5 @@ void RenderDevice::RenderImage(float left, float top, float right, float bottom,
 
 }}}
 
+
+#undef OVR_D3D_VERSION

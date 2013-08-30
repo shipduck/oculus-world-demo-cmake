@@ -25,6 +25,8 @@ limitations under the License.
 // This file can be included twice, once with OVR_D3D_VERSION=10 and
 // once with OVR_D3D_VERSION=11.
 
+#define OVR_D3D_VERSION 11
+
 
 #ifndef OVR_D3D_VERSION
 #error define OVR_D3D_VERSION to 10 or 11
@@ -360,3 +362,5 @@ public:
 }}}
 
 #endif
+
+#undef OVR_D3D_VERSION
