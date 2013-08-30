@@ -29,13 +29,8 @@ limitations under the License.
 
 #include <d3dcompiler.h>
 
-#define OVR_D3D_VERSION 11
 
-#if (OVR_D3D_VERSION == 10)
-namespace OVR { namespace Render { namespace D3D10 {
-#else
 namespace OVR { namespace Render { namespace D3D11 {
-#endif
 
 static D3D1x_(INPUT_ELEMENT_DESC) ModelVertexDesc[] =
 {
@@ -364,16 +359,9 @@ RenderDevice::RenderDevice(const RendererParams& p, HWND window)
 
     int flags = 0;
 
-#if (OVR_D3D_VERSION == 10)
-    hr = D3D10CreateDevice(Adapter, D3D10_DRIVER_TYPE_HARDWARE, NULL, flags, D3D1x_(SDK_VERSION),
-                           &Device.GetRawRef());
-    Context = Device;
-    Context->AddRef();
-#else //11
     hr = D3D11CreateDevice(Adapter, Adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE,
                            NULL, flags, NULL, 0, D3D1x_(SDK_VERSION),
                            &Device.GetRawRef(), NULL, &Context.GetRawRef());
-#endif
     if (FAILED(hr))
         return;
 
@@ -414,16 +402,6 @@ RenderDevice::RenderDevice(const RendererParams& p, HWND window)
     gouraudShaders->SetShader(PixelShaders[FShader_Gouraud]);
     DefaultFill = *new ShaderFill(gouraudShaders);
 
-#if (OVR_D3D_VERSION == 10)
-    D3D1x_(BLEND_DESC) bm;
-    memset(&bm, 0, sizeof(bm));
-    bm.BlendEnable[0] = true;
-    bm.BlendOp      = bm.BlendOpAlpha   = D3D1x_(BLEND_OP_ADD);
-    bm.SrcBlend     = bm.SrcBlendAlpha  = D3D1x_(BLEND_SRC_ALPHA);
-    bm.DestBlend    = bm.DestBlendAlpha = D3D1x_(BLEND_INV_SRC_ALPHA);
-    bm.RenderTargetWriteMask[0]         = D3D1x_(COLOR_WRITE_ENABLE_ALL);
-    Device->CreateBlendState(&bm, &BlendState.GetRawRef());
-#else
     D3D1x_(BLEND_DESC) bm;
     memset(&bm, 0, sizeof(bm));
     bm.RenderTarget[0].BlendEnable = true;
@@ -432,7 +410,6 @@ RenderDevice::RenderDevice(const RendererParams& p, HWND window)
     bm.RenderTarget[0].DestBlend   = bm.RenderTarget[0].DestBlendAlpha  = D3D1x_(BLEND_INV_SRC_ALPHA);
     bm.RenderTarget[0].RenderTargetWriteMask = D3D1x_(COLOR_WRITE_ENABLE_ALL);
     Device->CreateBlendState(&bm, &BlendState.GetRawRef());
-#endif
 
     D3D1x_(RASTERIZER_DESC) rs;
     memset(&rs, 0, sizeof(rs));
@@ -709,21 +686,12 @@ void RenderDevice::SetMultipleViewports(int n, const Viewport* vps)
     }
     for(int i = 0; i < n; i++)
     {
-#if (OVR_D3D_VERSION == 10)
-        Viewports[i].Width = vps[i].w;
-        Viewports[i].Height = vps[i].h;
-        Viewports[i].MinDepth = 0;
-        Viewports[i].MaxDepth = 1;
-        Viewports[i].TopLeftX = vps[i].x;
-        Viewports[i].TopLeftY = vps[i].y;
-#else
         Viewports[i].Width = (float)vps[i].w;
         Viewports[i].Height = (float)vps[i].h;
         Viewports[i].MinDepth = 0;
         Viewports[i].MaxDepth = 1;
         Viewports[i].TopLeftX = (float)vps[i].x;
         Viewports[i].TopLeftY = (float)vps[i].y;
-#endif
     }
     NumViewports = n;
     Context->RSSetViewports(n, Viewports);
@@ -796,11 +764,8 @@ void RenderDevice::Clear(float r, float g, float b, float a, float depth)
     SetDepthMode(true, true, Compare_Always);
 		
     Context->IASetInputLayout(ModelVertexIL);
-#if (OVR_D3D_VERSION == 10)
-    Context->GSSetShader(NULL);
-#else
     Context->GSSetShader(NULL, NULL, 0);
-#endif
+
     //Shader<Shader_Geometry,ID3D1xGeometryShader> NullGS(this,(ID3D1xGeometryShader*)NULL);
     //NullGS.Set(Prim_TriangleStrip);
 
@@ -950,64 +915,23 @@ void*  Buffer::Map(size_t start, size_t size, int flags)
     if (flags & Map_Unsynchronized)    
         mapFlags = D3D1x_(MAP_WRITE_NO_OVERWRITE);    
 
-#if (OVR_D3D_VERSION == 10)
-    void* map;
-    if (SUCCEEDED(D3DBuffer->Map(mapFlags, 0, &map)))    
-        return ((char*)map) + start;    
-    else    
-        return NULL;
-#else
     D3D1x_(MAPPED_SUBRESOURCE) map;
     if (SUCCEEDED(Ren->Context->Map(D3DBuffer, 0, mapFlags, 0, &map)))    
         return ((char*)map.pData) + start;    
     else    
         return NULL;    
-#endif
 }
 
 bool   Buffer::Unmap(void *m)
 {
     OVR_UNUSED(m);
-
-#if (OVR_D3D_VERSION == 10)
-    D3DBuffer->Unmap();
-#else
     Ren->Context->Unmap(D3DBuffer, 0);
-#endif
     return true;
 }
 
 
 // Shaders
 
-#if (OVR_D3D_VERSION == 10)
-template<> bool Shader<Render::Shader_Vertex, ID3D10VertexShader>::Load(void* shader, size_t size)
-{
-    return SUCCEEDED(Ren->Device->CreateVertexShader(shader, size, &D3DShader));
-}
-template<> bool Shader<Render::Shader_Pixel, ID3D10PixelShader>::Load(void* shader, size_t size)
-{
-    return SUCCEEDED(Ren->Device->CreatePixelShader(shader, size, &D3DShader));
-}
-template<> bool Shader<Render::Shader_Geometry, ID3D10GeometryShader>::Load(void* shader, size_t size)
-{
-    return SUCCEEDED(Ren->Device->CreateGeometryShader(shader, size, &D3DShader));
-}
-
-template<> void Shader<Render::Shader_Vertex, ID3D10VertexShader>::Set(PrimitiveType) const
-{
-    Ren->Context->VSSetShader(D3DShader);
-}
-template<> void Shader<Render::Shader_Pixel, ID3D10PixelShader>::Set(PrimitiveType) const
-{
-    Ren->Context->PSSetShader(D3DShader);
-}
-template<> void Shader<Render::Shader_Geometry, ID3D10GeometryShader>::Set(PrimitiveType) const
-{
-    Ren->Context->GSSetShader(D3DShader);
-}
-
-#else // 11
 template<> bool Shader<Render::Shader_Vertex, ID3D11VertexShader>::Load(void* shader, size_t size)
 {
     return SUCCEEDED(Ren->Device->CreateVertexShader(shader, size, NULL, &D3DShader));
@@ -1033,7 +957,6 @@ template<> void Shader<Render::Shader_Geometry, ID3D11GeometryShader>::Set(Primi
 {
     Ren->Context->GSSetShader(D3DShader, NULL, 0);
 }
-#endif
 
 template<> void Shader<Render::Shader_Vertex, ID3D1xVertexShader>::SetUniformBuffer(Render::Buffer* buffer, int i)
 {
@@ -1799,18 +1722,9 @@ void RenderDevice::ForceFlushGPU()
     if (Device->CreateQuery(&queryDesc, &query.GetRawRef()) == S_OK)
     {
 
-#if (OVR_D3D_VERSION == 10)
-        // Begin() not used for EVENT query.
-        query->End();
-        // GetData will returns S_OK for both done == TRUE or FALSE.
-        // Exit on failure to avoid infinite loop.
-        do { }
-        while(!done && !FAILED(query->GetData(&done, sizeof(BOOL), 0)));
-#else
         Context->End(query);
         do { }
         while(!done && !FAILED(Context->GetData(query, &done, sizeof(BOOL), 0)));
-#endif
 
     }
 }
@@ -1845,6 +1759,3 @@ void RenderDevice::RenderImage(float left, float top, float right, float bottom,
 }
 
 }}}
-
-
-#undef OVR_D3D_VERSION

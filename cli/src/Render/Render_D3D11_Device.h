@@ -25,70 +25,21 @@ limitations under the License.
 // This file can be included twice, once with OVR_D3D_VERSION=10 and
 // once with OVR_D3D_VERSION=11.
 
-#define OVR_D3D_VERSION 11
-
-
-#ifndef OVR_D3D_VERSION
-#error define OVR_D3D_VERSION to 10 or 11
-#endif
-
 #include "Kernel/OVR_String.h"
 #include "Kernel/OVR_Array.h"
-
-#if (OVR_D3D_VERSION == 10 && !defined(_OVR_RENDERER_D3D10)) || \
-    (OVR_D3D_VERSION == 11 && !defined(_OVR_RENDERER_D3D11))
 
 #include "../Render/Render_Device.h"
 
 #include <Windows.h>
 
-#if (OVR_D3D_VERSION == 10)
-#define _OVR_RENDERER_D3D10
-#include <d3d10.h>
-
-namespace OVR { namespace Render { namespace D3D10 {
-
-#else // 11
 
 #define _OVR_RENDERER_D3D11
 #include <d3d11.h>
 
 namespace OVR { namespace Render { namespace D3D11 {
-#endif
 
 class RenderDevice;
 
-#ifdef D3D1x_
-#undef D3D1x_
-#endif
-#ifdef ID3D1x
-#undef ID3D1x
-#endif
-
-#if (OVR_D3D_VERSION == 10)
-typedef ID3D10Device            ID3D1xDevice;
-typedef ID3D10Device            ID3D1xDeviceContext;
-typedef ID3D10RenderTargetView  ID3D1xRenderTargetView;
-typedef ID3D10Texture2D         ID3D1xTexture2D;
-typedef ID3D10ShaderResourceView ID3D1xShaderResourceView;
-typedef ID3D10DepthStencilView  ID3D1xDepthStencilView;
-typedef ID3D10DepthStencilState ID3D1xDepthStencilState;
-typedef ID3D10InputLayout       ID3D1xInputLayout;
-typedef ID3D10Buffer            ID3D1xBuffer;
-typedef ID3D10VertexShader      ID3D1xVertexShader;
-typedef ID3D10PixelShader       ID3D1xPixelShader;
-typedef ID3D10GeometryShader    ID3D1xGeometryShader;
-typedef ID3D10BlendState        ID3D1xBlendState;
-typedef ID3D10RasterizerState   ID3D1xRasterizerState;
-typedef ID3D10SamplerState      ID3D1xSamplerState;
-typedef ID3D10Query             ID3D1xQuery;
-typedef ID3D10Blob              ID3D1xBlob;
-typedef D3D10_VIEWPORT          D3D1x_VIEWPORT;
-typedef D3D10_QUERY_DESC        D3D1x_QUERY_DESC;
-#define D3D1x_(x)               D3D10_##x
-#define ID3D1x(x)               ID3D10##x
-
-#else // D3D 11
 typedef ID3D11Device            ID3D1xDevice;
 typedef ID3D11DeviceContext     ID3D1xDeviceContext;
 typedef ID3D11RenderTargetView  ID3D1xRenderTargetView;
@@ -110,7 +61,6 @@ typedef D3D11_VIEWPORT          D3D1x_VIEWPORT;
 typedef D3D11_QUERY_DESC        D3D1x_QUERY_DESC;
 #define D3D1x_(x)               D3D11_##x
 #define ID3D1x(x)               ID3D11##x
-#endif
 
 class Buffer;
 
@@ -360,7 +310,3 @@ public:
 };
 
 }}}
-
-#endif
-
-#undef OVR_D3D_VERSION
