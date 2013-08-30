@@ -69,6 +69,10 @@ IF( WIN32 )
 	ENDIF(  )
 ENDIF(  )
 
+# subsystem = window
+IF( WIN32 )
+	LIST( APPEND KUUKO_EXE_OPTION WIN32 )
+ENDIF(  )
 #########################################################
 
 # Set Include Path
