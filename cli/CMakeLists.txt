@@ -84,18 +84,35 @@ FILE( GLOB KUUKO_SRC_FILES
 	"${KUUKO_SRC_DIR}/*.*" )
 FILE( GLOB KUUKO_CVARS_SRC_FILES
 	"${KUUKO_SRC_DIR}/cvars/*.*" )
+FILE( GLOB KUUKO_TINYXML_FILES 
+	"${KUUKO_SRC_DIR}/TinyXml/*.*" )
 	
 FILE( GLOB KUUKO_OCULUS_SDK_FILES 
 	"${KUUKO_SRC_DIR}/Platform/Platform.*"
-	"${KUUKO_SRC_DIR}/Platform/Win32_Gamepad.*"
-	"${KUUKO_SRC_DIR}/Platform/Win32_Platform.*"
-	"${KUUKO_SRC_DIR}/Render/Render_D3D11_Device.*"
 	"${KUUKO_SRC_DIR}/Render/Render_Device.*"
 	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureDDS.*"
 	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureTGA.*"
 	"${KUUKO_SRC_DIR}/Render/Render_XmlSceneLoader.*" )
-FILE( GLOB KUUKO_TINYXML_FILES 
-	"${KUUKO_SRC_DIR}/TinyXml/*.*" )
+	
+IF(MSVC)
+	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
+		"${KUUKO_SRC_DIR}/Platform/Win32_Gamepad.*"
+		"${KUUKO_SRC_DIR}/Platform/Win32_Platform.*"
+		#"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*"
+		#"${KUUKO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
+		"${KUUKO_SRC_DIR}/Render/Render_D3D11_Device.*" )
+ELSEIF( APPLE )
+	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
+		"${KUUKO_SRC_DIR}/Platform/OSX_Gamepad.*"
+		"${KUUKO_SRC_DIR}/Platform/OSX_Platform.*"
+		"${KUUKO_SRC_DIR}/Platform/OSX_WavPlayer.*"
+		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
+ELSE(  ) 
+	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
+		"${KUUKO_SRC_DIR}/Platform/Linux_Gamepad.*"
+		"${KUUKO_SRC_DIR}/Platform/Linux_Platform.*"
+		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
+ENDIF(  )
 	
 FILE( GLOB KUUKO_TEST_SRC_FILES 
 	"${KUUKO_TEST_DIR}/*.*" )
@@ -104,8 +121,8 @@ ADD_LIBRARY( kuuko
 	${KUUKO_SRC_FILES} 	
 	${KUUKO_TINYXML_FILES} 
 	${KUUKO_CVARS_SRC_FILES} 	
-	${KUUKO_OCULUS_SDK_FILES} 
-)
+	${KUUKO_OCULUS_SDK_FILES}
+	${KUUKO_OCULUS_SDK_PLATFORM_FILES} )
 	
 MSVC_SET_PCH( kuuko
 	"${KUUKO_SRC_DIR}/stdafx.h"
@@ -113,7 +130,7 @@ MSVC_SET_PCH( kuuko
 
 SOURCE_GROUP( "" FILES ${KUUKO_SRC_FILES} )
 SOURCE_GROUP( cvars FILES ${KUUKO_CVARS_SRC_FILES} )
-SOURCE_GROUP( oculus FILES ${KUUKO_OCULUS_SDK_FILES} )
+SOURCE_GROUP( oculus FILES ${KUUKO_OCULUS_SDK_FILES} ${KUUKO_OCULUS_SDK_PLATFORM_FILES} )
 SOURCE_GROUP( tinyxml FILES ${KUUKO_TINYXML_FILES} )
 
 ADD_EXECUTABLE( kuuko_exe 
