@@ -56,25 +56,16 @@ INCLUDE_DIRECTORIES( ${KUUKO_OCULUS_SDK_DIR} )
 
 IF( WIN32 )
 	INCLUDE( FindDirectX )
-	IF( DirectX_FOUND )
-		INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} )
-		LIST( APPEND KUUKO_LINK_LIBS ${DirectX_LIBRARIES} )
+	IF( DirectX_FOUND AND DirectX_D3D10_FOUND AND DirectX_D3D11_FOUND )
+		INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} 
+							${DirectX_D3D10_INCLUDE_DIR} 
+							${DirectX_D3D11_INCLUDE_DIR} )
+		LIST( APPEND KUUKO_LINK_LIBS 
+			${DirectX_LIBRARIES} 
+			${DirectX_D3D10_LIBRARY} 
+			${DirectX_D3D11_LIBRARY} )
 	ELSE(  )
-		MESSAGE( WARNING "Can't find DirectX SDK in your build system" )
-	ENDIF(  )
-	
-	IF( DirectX_D3D10_FOUND )
-		INCLUDE_DIRECTORIES( ${DirectX_D3D10_INCLUDE_DIR} )
-		LIST( APPEND KUUKO_LINK_LIBS ${DirectX_D3D10_LIBRARY} )
-	ELSE(  )
-		MESSAGE( WARNING "Can't find DirectX 10 SDK in your build system" )
-	ENDIF(  )
-	
-	IF( DirectX_D3D11_FOUND )
-		INCLUDE_DIRECTORIES( ${DirectX_D3D11_INCLUDE_DIR} )
-		LIST( APPEND KUUKO_LINK_LIBS ${DirectX_D3D11_LIBRARY} )
-	ELSE(  )
-		MESSAGE( WARNING "Can't find DirectX 11 SDK in your build system" )
+		MESSAGE( WARNING "Can't find DirectX 10/11 SDK in your build system" )
 	ENDIF(  )
 ENDIF(  )
 
@@ -102,7 +93,6 @@ FILE( GLOB OCULUS_SDK_SRC_FILES
 	"${KUUKO_OCULUS_SDK_DIR}/Platform/Win32_Gamepad.*"
 	"${KUUKO_OCULUS_SDK_DIR}/Platform/Win32_Platform.*"
 	"${KUUKO_OCULUS_SDK_DIR}/Render/Render_D3D11_Device.*"
-	"${KUUKO_OCULUS_SDK_DIR}/Render/Render_D3D10_Device.*"
 	"${KUUKO_OCULUS_SDK_DIR}/Render/Render_Device.*"
 	"${KUUKO_OCULUS_SDK_DIR}/Render/Render_LoadTextureDDS.*"
 	"${KUUKO_OCULUS_SDK_DIR}/Render/Render_LoadTextureTGA.*"
