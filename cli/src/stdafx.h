@@ -1,9 +1,23 @@
 ﻿// Ŭnicode please 
+#include "Kernel/OVR_Types.h"
 #define SR_USE_PCH 1
 
 #define NOMINMAX 
 
 #if SR_USE_PCH
+#include <float.h>
+#include <stdarg.h>
+#include <math.h>
+#include <string.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
+#include <ctype.h>
+#include <assert.h>
+#include <time.h>
+#include <locale.h>
+
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -12,6 +26,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <cstdint>
+#include <cfloat>
 
 #include <typeinfo>
 
@@ -57,6 +72,15 @@
 
 // for unit test
 #include <gtest/gtest.h>
+
+#ifdef OVR_OS_WIN32
+#include <windows.h>
+#include <d3d11.h>
+#include <d3dx11.h>
+#include <d3dcompiler.h>
+#include <xnamath.h>
+#include <xinput.h>
+#endif
 
 #else
 #error "NEED PCH"
