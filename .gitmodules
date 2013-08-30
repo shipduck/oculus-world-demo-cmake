@@ -7,3 +7,6 @@
 [submodule "cli/ext/loki"]
 	path = cli/ext/loki
 	url = https://github.com/dutor/loki.git
+[submodule "cli/ext/glew"]
+	path = cli/ext/glew
+	url = https://github.com/omniavinco/glew-cmake.git

@@ -82,6 +82,8 @@
 #include <xinput.h>
 #endif
 
+#include <GL/glew.h>
+
 #else
 #error "NEED PCH"
 #endif

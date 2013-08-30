@@ -66,6 +66,9 @@ IF( WIN32 )
 	ENDIF(  )
 ENDIF(  )
 
+ADD_SUBDIRECTORY ( ext/glew )
+INCLUDE_DIRECTORIES( ext/glew/include )
+
 # subsystem = window
 IF( WIN32 )
 	LIST( APPEND KUUKO_EXE_OPTION WIN32 )
@@ -79,6 +82,8 @@ IF( MSVC )
 	APPEND_LINK_LIBS( Setupapi winmm )
 ENDIF()
 
+APPEND_LINK_LIBS( libglew_shared )
+
 # File List
 FILE( GLOB KUUKO_SRC_FILES
 	"${KUUKO_SRC_DIR}/*.*" )
@@ -89,6 +94,7 @@ FILE( GLOB KUUKO_TINYXML_FILES
 	
 FILE( GLOB KUUKO_OCULUS_SDK_FILES 
 	"${KUUKO_SRC_DIR}/Platform/Platform.*"
+	"${KUUKO_SRC_DIR}/Platform/Platform_Default.*"
 	"${KUUKO_SRC_DIR}/Render/Render_Device.*"
 	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureDDS.*"
 	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureTGA.*"
@@ -98,8 +104,8 @@ IF(MSVC)
 	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
 		"${KUUKO_SRC_DIR}/Platform/Win32_Gamepad.*"
 		"${KUUKO_SRC_DIR}/Platform/Win32_Platform.*"
-		#"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*"
-		#"${KUUKO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
+		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*"
+		"${KUUKO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
 		"${KUUKO_SRC_DIR}/Render/Render_D3D11_Device.*" )
 ELSEIF( APPLE )
 	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
@@ -142,6 +148,7 @@ SOURCE_GROUP( "" FILES ${KUUKO_EXE_FILES} )
 TARGET_LINK_LIBRARIES( kuuko_exe
 	${KUUKO_LINK_LIBS}
 	kuuko
+	opengl32
 	${KUUKO_LINK_EXT_LIBS} )
 
 ADD_EXECUTABLE( kuuko_test
@@ -155,6 +162,7 @@ TARGET_LINK_LIBRARIES( kuuko_test
 	${KUUKO_LINK_LIBS} 
 	gtest
 	kuuko
+	opengl32
 	${KUUKO_LINK_EXT_LIBS}	)
 
 MSVC_SET_PCH( kuuko_test

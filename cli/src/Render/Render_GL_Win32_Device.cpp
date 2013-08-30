@@ -29,7 +29,7 @@ namespace OVR { namespace Render { namespace GL { namespace Win32 {
 // ***** GL::Win32::RenderDevice
 
 // Implement static initializer function to create this class.
-Render::RenderDevice* RenderDevice::CreateDevice(const RendererParams&, void* oswnd)
+Render::RenderDevice* RenderDevice::CreateDevice(const RendererParams& rp, void* oswnd)
 {
     HWND hwnd = (HWND)oswnd;
 
@@ -63,8 +63,14 @@ Render::RenderDevice* RenderDevice::CreateDevice(const RendererParams&, void* os
         return NULL;
     }
 
-   // return new RenderDevice(rp, hwnd, dc, context);
-    return 0;
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		/* Problem: glewInit failed, something is seriously wrong. */
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+		return nullptr;
+	}
+
+	return new RenderDevice(rp, hwnd, dc, context);
 }
 
 
