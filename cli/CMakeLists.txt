@@ -6,6 +6,8 @@ INCLUDE( pch_support )
 INCLUDE( compiler_option )
 
 OPTION( AUTO_DOWNLOAD_EXT "When needed external library is not found, Automatically download it." OFF )
+OPTION( SUBMODULE_UPDATE "Try to update submodules" ON )
+
 SET( KUUKO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 SET( KUUKO_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
 SET( KUUKO_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/res )
@@ -15,6 +17,13 @@ SET( KUUKO_EXE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/exe )
 SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin" )
 
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+
+IF( SUBMODULES_UPDATE )
+	MESSAGE( "Git Submodule update..." )
+	EXECUTE_PROCESS( COMMAND git submodule update --init
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/.. )
+	MESSAGE( "Git Submodule update complete" )
+ENDIF(  )
 
 IF( APPLE )
 	SET( CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT} )
