@@ -112,6 +112,16 @@ ENDIF()
 
 APPEND_LINK_LIBS( libglew_shared )
 
+IF( WIN32 )
+	SET( GL_LIBRARY opengl32 )
+ELSEIF( APPLE )
+	FIND_LIBRARY( GL_LIBRARY OpenGL )
+ELSE(  )
+	SET( GL_LIBRARY GL )
+ENDIF(  )
+
+APPEND_LINK_LIBS( ${GL_LIBRARY} )
+
 # File List
 FILE( GLOB KUUKO_SRC_FILES
 	"${KUUKO_SRC_DIR}/*.*" )
@@ -176,7 +186,6 @@ SOURCE_GROUP( "" FILES ${KUUKO_EXE_FILES} )
 TARGET_LINK_LIBRARIES( kuuko_exe
 	${KUUKO_LINK_LIBS}
 	kuuko
-	opengl32
 	${KUUKO_LINK_EXT_LIBS} )
 
 ADD_EXECUTABLE( kuuko_test
@@ -190,7 +199,6 @@ TARGET_LINK_LIBRARIES( kuuko_test
 	${KUUKO_LINK_LIBS} 
 	gtest
 	kuuko
-	opengl32
 	${KUUKO_LINK_EXT_LIBS}	)
 
 MSVC_SET_PCH( kuuko_test
