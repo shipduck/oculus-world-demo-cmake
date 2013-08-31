@@ -44,3 +44,7 @@ cli/src/res.h
 
 #python
 *.pyc
+cli/CMakeScripts
+cli/kuuko.build
+*.xcodeproj
+kuuko_exe
