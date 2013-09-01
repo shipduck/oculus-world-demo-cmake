@@ -24,7 +24,7 @@ template<>
 class GenSimpleHierarchy<Loki::NullType> { };
 
 template<typename T>
-void safeDelete(T* &ptr) 
+void SafeDelete(T* &ptr) 
 {
 	if(ptr != nullptr) {
 		delete(ptr);
@@ -33,7 +33,7 @@ void safeDelete(T* &ptr)
 }
 
 template<typename T>
-void safeDeleteArray(T* &ptr) 
+void SafeDeleteArray(T* &ptr) 
 {
 	if(ptr != nullptr) {
 		delete[](ptr);
@@ -42,7 +42,7 @@ void safeDeleteArray(T* &ptr)
 }
 
 template<typename T>
-void safeDeleteWithNullCheck(T* &ptr) 
+void SafeDeleteWithNullCheck(T* &ptr) 
 {
 	OVR_ASSERT(ptr != nullptr && "null지우기는 언어상은 지원하나 아마도 잘못 짜여져있을 가능성이 있다");
 	delete(ptr);
@@ -50,7 +50,7 @@ void safeDeleteWithNullCheck(T* &ptr)
 }
 
 template<typename T>
-void safeDeleteArrayWithNullCheck(T* &ptr) 
+void SafeDeleteArrayWithNullCheck(T* &ptr) 
 {
 	OVR_ASSERT(ptr != nullptr && "null지우기는 언어상은 지원하나 아마도 잘못 짜여져있을 가능성이 있다");
 	delete[](ptr);
@@ -58,20 +58,8 @@ void safeDeleteArrayWithNullCheck(T* &ptr)
 }
 
 template<typename T, int N>
-int getArraySize(T (&arr)[N]) 
+int GetArraySize(T (&arr)[N]) 
 {
 	return N;
-}
-
-template<typename T>
-void callConstructor(T *ptr) 
-{
-	new(ptr) T;
-}
-
-template<typename T>
-void callDestructor(T *ptr) 
-{
-	ptr->~T();
 }
 }   // namespace kuuko
