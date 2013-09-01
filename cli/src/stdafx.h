@@ -57,8 +57,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-// libovr
-#include <OVR.h>
+//disable oculus sdk new
+#ifdef OVR_DEFINE_NEW
+#undef OVR_DEFINE_NEW
+#define OVR_DEFINE_NEW new
+#endif
+
 
 // loki
 #include "Typelist.h"
@@ -82,6 +86,14 @@
 #endif
 
 #include <GL/glew.h>
+
+// libovr
+#include <OVR.h>
+
+namespace OVR {;
+typedef OVR::Vector2<int> Vector2i;
+typedef OVR::Vector3<int> Vector3i;
+}   // namespace OVR
 
 #else
 #error "NEED PCH"

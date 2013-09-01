@@ -37,6 +37,9 @@ MACRO( APPEND_LINK_EXT_LIBS OPTIMIZED_LIB DEBUG_LIB )
 	LIST( APPEND KUUKO_LINK_EXT_LIBS optimized ${OPTIMIZED_LIB} debug ${DEBUG_LIB} )
 ENDMACRO( APPEND_LINK_EXT_LIBS OPTIMIZED_LIB DEBUG_LIB )
 
+# enable ovr assert
+ADD_DEFINITIONS(-DOVR_BUILD_DEBUG=1)
+
 #########################################################
 # Kuuko main 
 SET( KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/main.cpp )
