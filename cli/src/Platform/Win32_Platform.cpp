@@ -21,7 +21,6 @@ limitations under the License.
 
 ************************************************************************************/
 #include "stdafx.h"
-
 #include "Kernel/OVR_System.h"
 #include "Kernel/OVR_Array.h"
 #include "Kernel/OVR_String.h"
@@ -544,7 +543,7 @@ Render::DisplayId PlatformCore::GetDisplay(int screen)
 
 }}}
 
-/*
+
 int WINAPI WinMain(HINSTANCE hinst, HINSTANCE prevInst, LPSTR inArgs, int show)
 {
     using namespace OVR;
@@ -599,4 +598,3 @@ int WINAPI WinMain(HINSTANCE hinst, HINSTANCE prevInst, LPSTR inArgs, int show)
     OVR_DEBUG_STATEMENT(_CrtDumpMemoryLeaks());
     return exitCode;
 }
-*/

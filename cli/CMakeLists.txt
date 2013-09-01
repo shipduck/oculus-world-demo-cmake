@@ -42,17 +42,12 @@ ADD_DEFINITIONS(-DOVR_BUILD_DEBUG=1)
 
 #########################################################
 # Kuuko main 
-SET( KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/main.cpp )
-IF( MSVC )
-	LIST( APPEND KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/win_main.cpp )
-ELSEIF( APPLE )
-	LIST( APPEND KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/osx_main.mm )
+SET( KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/main.cpp )	
+IF( APPLE )
 	FIND_LIBRARY( OPENGL_LIB OpenGL )
 	FIND_LIBRARY( COCOA_LIB Cocoa )
 	FIND_LIBRARY( IOKIT_LIB IOKit )
 	APPEND_LINK_LIBS( ${IOKIT_LIB} ${COCOA_LIB} )
-ELSE(  )
-	LIST( APPEND KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/linux_main.cpp )
 ENDIF(  )
 
 #########################################################
@@ -156,21 +151,17 @@ FILE( GLOB KUUKO_OCULUS_SDK_FILES
 	
 IF(MSVC)
 	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/Win32_Gamepad.*"
-		"${KUUKO_SRC_DIR}/Platform/Win32_Platform.*"
+		"${KUUKO_SRC_DIR}/Platform/Win32_*.*"
 		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*"
 		"${KUUKO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
 		"${KUUKO_SRC_DIR}/Render/Render_D3D11_Device.*" )
 ELSEIF( APPLE )
 	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/OSX_Gamepad.*"
-		"${KUUKO_SRC_DIR}/Platform/OSX_Platform.*"
-		"${KUUKO_SRC_DIR}/Platform/OSX_WavPlayer.*"
+		"${KUUKO_SRC_DIR}/Platform/OSX_*.*"
 		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
 ELSE(  ) 
 	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/Linux_Gamepad.*"
-		"${KUUKO_SRC_DIR}/Platform/Linux_Platform.*"
+		"${KUUKO_SRC_DIR}/Platform/Linux_*.*"
 		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
 ENDIF(  )
 	
