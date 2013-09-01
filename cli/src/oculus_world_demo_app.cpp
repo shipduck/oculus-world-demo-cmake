@@ -28,7 +28,6 @@ limitations under the License.
 
 #include "OVR.h"
 
-#include "Platform/Platform_Default.h"
 #include "Render/Render_Device.h"
 #include "Render/Render_XmlSceneLoader.h"
 #include "Render/Render_FontEmbed_DejaVu48.h"
@@ -1712,5 +1711,3 @@ void OculusWorldDemoApp::GamepadStateChanged(const GamepadState& pad)
 
 
 //-------------------------------------------------------------------------------------
-
-OVR_PLATFORM_APP(OculusWorldDemoApp);
