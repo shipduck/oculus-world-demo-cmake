@@ -20,7 +20,6 @@ limitations under the License.
 
 *************************************************************************************/
 
-#include "stdafx.h"
 #include "Player.h"
 #include <Kernel/OVR_Alg.h>
 

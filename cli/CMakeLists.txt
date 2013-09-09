@@ -1,19 +1,14 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
-PROJECT( kuuko )
+PROJECT( demo )
 
 LIST( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" )
-INCLUDE( pch_support )
 INCLUDE( compiler_option )
 
 OPTION( AUTO_DOWNLOAD_EXT "When needed external library is not found, Automatically download it." OFF )
 OPTION( SUBMODULE_UPDATE "Try to update submodules" ON )
 
-SET( KUUKO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
-SET( KUUKO_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
-SET( KUUKO_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/res )
-SET( KUUKO_SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/script )
-SET( KUUKO_EXT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext )
-SET( KUUKO_EXE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/exe )
+SET( DEMO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
+SET( DEMO_EXT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext )
 SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin" )
 
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -30,19 +25,18 @@ IF( APPLE )
 ENDIF(  )
 
 MACRO( APPEND_LINK_LIBS )
-	LIST( APPEND KUUKO_LINK_LIBS ${ARGN} )
+	LIST( APPEND DEMO_LINK_LIBS ${ARGN} )
 ENDMACRO( APPEND_LINK_LIBS )
 
 MACRO( APPEND_LINK_EXT_LIBS OPTIMIZED_LIB DEBUG_LIB )
-	LIST( APPEND KUUKO_LINK_EXT_LIBS optimized ${OPTIMIZED_LIB} debug ${DEBUG_LIB} )
+	LIST( APPEND DEMO_LINK_EXT_LIBS optimized ${OPTIMIZED_LIB} debug ${DEBUG_LIB} )
 ENDMACRO( APPEND_LINK_EXT_LIBS OPTIMIZED_LIB DEBUG_LIB )
 
 # enable ovr assert
 ADD_DEFINITIONS(-DOVR_BUILD_DEBUG=1)
 
 #########################################################
-# Kuuko main 
-SET( KUUKO_EXE_FILES ${KUUKO_EXE_DIR}/main.cpp )	
+
 IF( APPLE )
 	FIND_LIBRARY( OPENGL_LIB OpenGL )
 	FIND_LIBRARY( COCOA_LIB Cocoa )
@@ -52,56 +46,39 @@ ENDIF(  )
 
 #########################################################
 # Add LibOVR
-ADD_SUBDIRECTORY( ${KUUKO_EXT_DIR}/libovr )
+ADD_SUBDIRECTORY( ${DEMO_EXT_DIR}/libovr )
 
 INCLUDE_DIRECTORIES( ${LIBOVR_INC_DIR} )
 
 APPEND_LINK_LIBS( LibOVR )
 
-# Add Google Test
-ADD_SUBDIRECTORY( ${KUUKO_EXT_DIR}/googletest )
-
-INCLUDE_DIRECTORIES( ${KUUKO_EXT_DIR}/googletest/include )
-
-# Add Ext Inlcude
-INCLUDE_DIRECTORIES( ${KUUKO_EXT_DIR}/loki )
-
-# Add boost Include
-IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/boost/boost )
-	SET( BOOST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/boost )
-	IF( AUTO_DOWNLOAD_EXT )
-		MESSAGE( "Boost is not found in ${BOOST_DIR}" )
-		MESSAGE( "Start Downloading boost..." )
-		SET( BOOST_TMP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/boost_tmp )
-		IF( NOT IS_DIRECTORY ${BOOST_TMP_DIR})
-			MAKE_DIRECTORY( ${BOOST_TMP_DIR} )
-		ENDIF(  )
-		FILE( DOWNLOAD "http://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.gz/download" "${BOOST_TMP_DIR}/boost.tgz" )
-		MESSAGE( "Download complete" )
-		MESSAGE( "Start Unpacking..." )
-		WRITE_FILE( ${BOOST_TMP_DIR}/extract_boost.py "import tarfile, shutil, os, os.path\ntar = tarfile.open('boost.tgz')\ntar.extractall('${BOOST_TMP_DIR}')\nfor f in os.listdir(os.path.join('${BOOST_TMP_DIR}', 'boost_1_54_0')):shutil.move(os.path.join('${BOOST_TMP_DIR}', 'boost_1_54_0', f), '${BOOST_DIR}')" )
-		EXECUTE_PROCESS( COMMAND python extract_boost.py
-				WORKING_DIRECTORY ${BOOST_TMP_DIR} )
-		FILE( REMOVE_RECURSE ${BOOST_TMP_DIR} )
-		MESSAGE( "Boost setup complete" )
-	ELSE(  )
-		MESSAGE( FATAL_ERROR Please\ put\ boost\ library\ in\ “${CMAKE_CURRENT_SOURCE_DIR}/boost/boost” )
-	ENDIF(  )
-ENDIF(  )
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/boost )
-
 IF( WIN32 )
 	INCLUDE( FindDirectX )
-	IF( DirectX_FOUND AND DirectX_D3D10_FOUND AND DirectX_D3D11_FOUND )
-		INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} 
-							${DirectX_D3D10_INCLUDE_DIR} 
+	IF( DirectX_FOUND )
+		IF( DirectX_D3D11_FOUND )
+			INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} 
 							${DirectX_D3D11_INCLUDE_DIR} )
-		LIST( APPEND KUUKO_LINK_LIBS 
-			${DirectX_LIBRARIES} 
-			${DirectX_D3D10_LIBRARY} 
-			${DirectX_D3D11_LIBRARY} )
+			LIST( APPEND DEMO_LINK_LIBS 
+				${DirectX_LIBRARIES} 
+				${DirectX_D3D11_LIBRARY} )
+			MESSAGE( "Use DirectX 11" )	
+		ENDIF(  )
+		
+		IF( DirectX_D3D10_FOUND )
+			INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} 
+							${DirectX_D3D10_INCLUDE_DIR} )
+			LIST( APPEND DEMO_LINK_LIBS 
+				${DirectX_LIBRARIES} 
+				${DirectX_D3D10_LIBRARY} )
+			MESSAGE( "Use DirectX 10" )	
+		ENDIF(  )
+			
+		IF( NOT DirectX_D3D11_FOUND AND NOT DirectX_D3D10_FOUND )
+			MESSAGE( WARNING "Can't find DirectX 10 or 11 SDK in your build system" )
+		ENDIF(  )
+	
 	ELSE(  )
-		MESSAGE( WARNING "Can't find DirectX 10/11 SDK in your build system" )
+		MESSAGE( WARNING "Can't find DirectX SDK in your build system" )
 	ENDIF(  )
 ENDIF(  )
 
@@ -110,12 +87,12 @@ INCLUDE_DIRECTORIES( ext/glew/include )
 
 # subsystem = window
 IF( WIN32 )
-	LIST( APPEND KUUKO_EXE_OPTION WIN32 )
+	LIST( APPEND DEMO_OPTION WIN32 )
 ENDIF(  )
 #########################################################
 
 # Set Include Path
-INCLUDE_DIRECTORIES( ${KUUKO_SRC_DIR} )
+INCLUDE_DIRECTORIES( ${DEMO_SRC_DIR} )
 
 IF( MSVC )
 	APPEND_LINK_LIBS( Setupapi winmm )
@@ -134,94 +111,55 @@ ENDIF(  )
 APPEND_LINK_LIBS( ${GL_LIBRARY} )
 
 # File List
-FILE( GLOB KUUKO_SRC_FILES
-	"${KUUKO_SRC_DIR}/*.*" )
-FILE( GLOB KUUKO_CVARS_SRC_FILES
-	"${KUUKO_SRC_DIR}/cvars/*.*" )
-FILE( GLOB KUUKO_TINYXML_FILES 
-	"${KUUKO_SRC_DIR}/TinyXml/*.*" )
+FILE( GLOB DEMO_SRC_FILES
+	"${DEMO_SRC_DIR}/*.*" )
+FILE( GLOB DEMO_TINYXML_FILES 
+	"${DEMO_SRC_DIR}/TinyXml/*.*" )
 	
-FILE( GLOB KUUKO_OCULUS_SDK_FILES 
-	"${KUUKO_SRC_DIR}/Platform/Platform.*"
-	"${KUUKO_SRC_DIR}/Platform/Platform_Default.*"
-	"${KUUKO_SRC_DIR}/Render/Render_Device.*"
-	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureDDS.*"
-	"${KUUKO_SRC_DIR}/Render/Render_LoadTextureTGA.*"
-	"${KUUKO_SRC_DIR}/Render/Render_XmlSceneLoader.*" )
+FILE( GLOB DEMO_OCULUS_SDK_FILES 
+	"${DEMO_SRC_DIR}/Platform/Platform.*"
+	"${DEMO_SRC_DIR}/Platform/Platform_Default.*"
+	"${DEMO_SRC_DIR}/Render/Render_Device.*"
+	"${DEMO_SRC_DIR}/Render/Render_LoadTextureDDS.*"
+	"${DEMO_SRC_DIR}/Render/Render_LoadTextureTGA.*"
+	"${DEMO_SRC_DIR}/Render/Render_XmlSceneLoader.*" )
 	
 IF(MSVC)
-	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/Win32_*.*"
-		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*"
-		"${KUUKO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
-		"${KUUKO_SRC_DIR}/Render/Render_D3D11_Device.*" )
+	FILE( GLOB DEMO_OCULUS_SDK_PLATFORM_FILES 
+		"${DEMO_SRC_DIR}/Platform/Win32_*.*"
+		"${DEMO_SRC_DIR}/Render/Render_GL_Device.*"
+		"${DEMO_SRC_DIR}/Render/Render_GL_Win32_Device.*"
+		"${DEMO_SRC_DIR}/Render/Render_D3D11_Device.*"
+		"${DEMO_SRC_DIR}/Render/Render_D3D10_Device.*"		)
 ELSEIF( APPLE )
-	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/OSX_*.*"
-		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
+	FILE( GLOB DEMO_OCULUS_SDK_PLATFORM_FILES 
+		"${DEMO_SRC_DIR}/Platform/OSX_*.*"
+		"${DEMO_SRC_DIR}/Render/Render_GL_Device.*" )
 ELSE(  ) 
-	FILE( GLOB KUUKO_OCULUS_SDK_PLATFORM_FILES 
-		"${KUUKO_SRC_DIR}/Platform/Linux_*.*"
-		"${KUUKO_SRC_DIR}/Render/Render_GL_Device.*" )
+	FILE( GLOB DEMO_OCULUS_SDK_PLATFORM_FILES 
+		"${DEMO_SRC_DIR}/Platform/Linux_*.*"
+		"${DEMO_SRC_DIR}/Render/Render_GL_Device.*" )
 ENDIF(  )
 	
-FILE( GLOB KUUKO_TEST_SRC_FILES 
-	"${KUUKO_TEST_DIR}/*.*" )
-	
-ADD_LIBRARY( kuuko 
-	${KUUKO_SRC_FILES} 	
-	${KUUKO_TINYXML_FILES} 
-	${KUUKO_CVARS_SRC_FILES} 	
-	${KUUKO_OCULUS_SDK_FILES}
-	${KUUKO_OCULUS_SDK_PLATFORM_FILES} )
-	
-MSVC_SET_PCH( kuuko
-	"${KUUKO_SRC_DIR}/stdafx.h"
-	"${KUUKO_SRC_DIR}/stdafx.cpp")
+ADD_EXECUTABLE( demo 
+	${DEMO_OPTION}
+	${DEMO_SRC_FILES} 	
+	${DEMO_TINYXML_FILES} 
+	${DEMO_CVARS_SRC_FILES} 	
+	${DEMO_OCULUS_SDK_FILES}
+	${DEMO_OCULUS_SDK_PLATFORM_FILES} )
 
-SOURCE_GROUP( "" FILES ${KUUKO_SRC_FILES} )
-SOURCE_GROUP( cvars FILES ${KUUKO_CVARS_SRC_FILES} )
-SOURCE_GROUP( oculus FILES ${KUUKO_OCULUS_SDK_FILES} ${KUUKO_OCULUS_SDK_PLATFORM_FILES} )
-SOURCE_GROUP( tinyxml FILES ${KUUKO_TINYXML_FILES} )
+SOURCE_GROUP( "" FILES ${DEMO_SRC_FILES} )
+SOURCE_GROUP( oculus FILES ${DEMO_OCULUS_SDK_FILES} ${DEMO_OCULUS_SDK_PLATFORM_FILES} )
+SOURCE_GROUP( tinyxml FILES ${DEMO_TINYXML_FILES} )
 
-ADD_EXECUTABLE( kuuko_exe 
-	${KUUKO_EXE_OPTION}
-	${KUUKO_EXE_FILES} )
-	
-SOURCE_GROUP( "" FILES ${KUUKO_EXE_FILES} )
+TARGET_LINK_LIBRARIES( demo
+	${DEMO_LINK_LIBS}
+	${DEMO_LINK_EXT_LIBS} )
 
-TARGET_LINK_LIBRARIES( kuuko_exe
-	${KUUKO_LINK_LIBS}
-	kuuko
-	${KUUKO_LINK_EXT_LIBS} )
-
-ADD_EXECUTABLE( kuuko_test
-	${KUUKO_TEST_SRC_FILES} 
-	"${KUUKO_SRC_DIR}/stdafx.h"
-	"${KUUKO_SRC_DIR}/stdafx.cpp" )
-
-SOURCE_GROUP( "" FILES ${KUUKO_TEST_SRC_FILES} )
-
-TARGET_LINK_LIBRARIES( kuuko_test 
-	${KUUKO_LINK_LIBS} 
-	gtest
-	kuuko
-	${KUUKO_LINK_EXT_LIBS}	)
-
-MSVC_SET_PCH( kuuko_test
-	"${KUUKO_SRC_DIR}/stdafx.h"
-	"${KUUKO_SRC_DIR}/stdafx.cpp")
-
-ADD_CUSTOM_TARGET( kuuko_res
-	COMMAND python ${KUUKO_SCRIPT_DIR}/res_build.py
-	WORKING_DIRECTORY ${KUUKO_SCRIPT_DIR}
-	COMMENT "Create res.h from resource directory")
-
-ADD_DEPENDENCIES( kuuko kuuko_res )
-
-USE_CPP11( TARGET kuuko LibOVR gtest kuuko_exe kuuko_test )
+USE_CPP11( TARGET demo LibOVR )
 
 IF( APPLE )
 	# For debug... OSX App bundle find file from app bundle existance path
-	SET_TARGET_PROPERTIES( kuuko_exe PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR} )
+	SET_TARGET_PROPERTIES( demo PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR} )
 ENDIF(  )

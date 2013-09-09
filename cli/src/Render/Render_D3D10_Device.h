@@ -1,7 +1,7 @@
 /************************************************************************************
 
-Filename    :   Renderer_D3D11_Device.cpp
-Content     :   Builds D3D11 renderer versions (to avoid duplication).
+Filename    :   Renderer_D3D10_Device.h
+Content     :   Builds D3D10 renderer versions (to avoid duplication).
 Created     :   September 10, 2012
 Authors     :   Andrew Reisse
 
@@ -21,6 +21,6 @@ limitations under the License.
 
 ************************************************************************************/
 
-#define OVR_D3D_VERSION 11
-#include "Render_D3D1X_Device.cpp"
+#define OVR_D3D_VERSION 10
+#include "Render_D3D1X_Device.h"
 #undef OVR_D3D_VERSION

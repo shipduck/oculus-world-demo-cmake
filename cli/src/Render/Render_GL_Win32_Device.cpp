@@ -20,7 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ************************************************************************************/
-#include "stdafx.h"
+#include <GL/glew.h>
 #include "Render_GL_Win32_Device.h"
 
 namespace OVR { namespace Render { namespace GL { namespace Win32 {

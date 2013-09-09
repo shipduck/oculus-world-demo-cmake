@@ -20,7 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ************************************************************************************/
-#include "stdafx.h"
+
 #include "Kernel/OVR_System.h"
 #include "Kernel/OVR_Array.h"
 #include "Kernel/OVR_String.h"
