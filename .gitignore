@@ -30,21 +30,11 @@ build
 *.opensdf
 *.tlog
 *.lastbuildstate
+*.xcodeproj
 ipch
 
-# boost
-cli/boost
-
 # external library
-cli/ext/*
+ext/*
 
-# resource
-cli/res
-cli/src/res.h
-
-#python
-*.pyc
-cli/CMakeScripts
-cli/kuuko.build
-*.xcodeproj
-kuuko_exe
+# assets
+Assets

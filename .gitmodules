@@ -1,12 +1,6 @@
-[submodule "cli/ext/libovr"]
-	path = cli/ext/libovr
+[submodule "ext/libovr"]
+	path = ext/libovr
 	url = https://github.com/if1live/LibOVR.git
-[submodule "cli/ext/googletest"]
-	path = cli/ext/googletest
-	url = https://github.com/if1live/googletest-svn.git
-[submodule "cli/ext/loki"]
-	path = cli/ext/loki
-	url = https://github.com/dutor/loki.git
-[submodule "cli/ext/glew"]
-	path = cli/ext/glew
+[submodule "ext/glew"]
+	path = ext/glew
 	url = https://github.com/omniavinco/glew-cmake.git
